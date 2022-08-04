@@ -171,7 +171,7 @@ namespace Mesen.GUI.Forms
 							SaveStateManager.UpdateStateMenu(mnuLoadState, false);
 							SaveStateManager.UpdateStateMenu(mnuSaveState, true);
 
-							this.Text = "Mesen-S - " + romInfo.GetRomName();
+							this.Text = "Mesen-SX (Mode7 Viewer) - " + romInfo.GetRomName();
 
 							if(DebugWindowManager.HasOpenedWindow) {
 								DebugWorkspaceManager.GetWorkspace();
@@ -195,7 +195,7 @@ namespace Mesen.GUI.Forms
 
 				case ConsoleNotificationType.EmulationStopped:
 					this.BeginInvoke((Action)(() => {
-						this.Text = "Mesen-S";
+						this.Text = "Mesen-SX (Mode7 Viewer)";
 						UpdateDebuggerMenu();
 						ShowGameScreen(GameScreenMode.RecentGames);
 						ResizeRecentGames();

@@ -95,7 +95,7 @@ namespace Mesen.GUI
 						case Language.Portuguese: message = "Microsoft .NET Framework 4.5 não foi encontrado. Por favor, baixe a versão mais recente de .NET Framework do site da Microsoft e tente novamente."; break;
 						case Language.Chinese: message = "找不到 Microsoft .NET Framework 4.5，请访问 Microsoft 官网下载安装之后再试。"; break;
 					}
-					MessageBox.Show(message + Environment.NewLine + Environment.NewLine + e.ToString(), "Mesen-S", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(message + Environment.NewLine + Environment.NewLine + e.ToString(), "Mesen-SX (Mode7 View)", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				} catch(Exception e) {
 					string message = "An unexpected error has occurred.\n\nError details:\n{0}";
@@ -108,7 +108,7 @@ namespace Mesen.GUI
 						case Language.Portuguese: message = "Houve um erro inesperado.&#xA;&#xA;Detalhes do erro:&#xA;{0}"; break;
 						case Language.Chinese: message = "发生意外错误。\n\n详情:\n{0}"; break;
 					}
-					MessageBox.Show(string.Format(message, e.ToString()), "Mesen-S", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(string.Format(message, e.ToString()), "Mesen-SX (Mode7 View)", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 
 				if(!RuntimeChecker.TestDll()) {

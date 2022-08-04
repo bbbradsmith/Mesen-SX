@@ -484,6 +484,56 @@ bool Ppu::ProcessEndOfScanline(uint16_t hClock)
 			_spc->SetSpcState(true);
 		}
 
+		// Mode7 viewer stats
+		if (_scanline >= 0 && _scanline < 240) {
+			if (_state.BgMode == 7 && !_state.ForcedVblank
+				&& (_scanline > 0 && _scanline < 224)) { // (manually forcing 223 lines, couldn't figure out how to detect the real state)
+				_state.Mode7Scanline[_scanline] = 1;
+
+				// calculation copied from Ppu::RenderTilemapMode7 above
+				auto clip = [](int32_t val) { return (val & 0x2000) ? (val | ~0x3ff) : (val & 0x3ff); };
+				int32_t hScroll = ((int32_t)_state.Mode7.HScroll << 19) >> 19;
+				int32_t vScroll = ((int32_t)_state.Mode7.VScroll << 19) >> 19;
+				int32_t centerX = ((int32_t)_state.Mode7.CenterX << 19) >> 19;
+				int32_t centerY = ((int32_t)_state.Mode7.CenterY << 19) >> 19;
+				uint16_t realY = _state.Mode7.VerticalMirroring ? (255 - _scanline) : _scanline;
+				int32_t xValue = (
+					((_state.Mode7.Matrix[0] * clip(hScroll - centerX)) & ~63) +
+					((_state.Mode7.Matrix[1] * realY) & ~63) +
+					((_state.Mode7.Matrix[1] * clip(vScroll - centerY)) & ~63) +
+					(centerX << 8)
+				);
+				int32_t yValue = (
+					((_state.Mode7.Matrix[2] * clip(hScroll - centerX)) & ~63) +
+					((_state.Mode7.Matrix[3] * realY) & ~63) +
+					((_state.Mode7.Matrix[3] * clip(vScroll - centerY)) & ~63) +
+					(centerY << 8)
+				);
+				int16_t xStep = _state.Mode7.Matrix[0];
+				int16_t yStep = _state.Mode7.Matrix[2];
+
+				// generate start and end points, then renormalize their midpoint to a wrapped position on the map
+				// (so that we can always see the centre of it in the window)
+				int32_t xStart = xValue;
+				int32_t yStart = yValue;
+				int32_t xEnd = xValue + xStep * 255;
+				int32_t yEnd = yValue + yStep * 255;
+				int32_t xMid = (xStart + xEnd) / 2; // real midpoint
+				int32_t yMid = (yStart + yEnd) / 2;
+				int32_t xWMid = xMid & 0x3FF00; // wrapped midpoint
+				int32_t yWMid = yMid & 0x3FF00;
+
+				// remember each scanline for later
+				_state.Mode7ScanlineX0[_scanline] = (xStart + xWMid - xMid) >> 8;
+				_state.Mode7ScanlineY0[_scanline] = (yStart + yWMid - yMid) >> 8;
+				_state.Mode7ScanlineX1[_scanline] = (xEnd   + xWMid - xMid) >> 8;
+				_state.Mode7ScanlineY1[_scanline] = (yEnd   + yWMid - yMid) >> 8;
+			} else {
+				// hide this scanline
+				_state.Mode7Scanline[_scanline] = 0;
+			}
+		}
+
 		UpdateSpcState();
 		return true;
 	}

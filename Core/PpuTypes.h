@@ -182,6 +182,13 @@ struct PpuState
 	bool ColorMathSubstractMode = false;
 	bool ColorMathHalveResult = false;
 	uint16_t FixedColor = 0;
+
+	// Mode7 viewer
+	int32_t Mode7Scanline[240];
+	int32_t Mode7ScanlineX0[240];
+	int32_t Mode7ScanlineY0[240];
+	int32_t Mode7ScanlineX1[240];
+	int32_t Mode7ScanlineY1[240];
 };
 
 

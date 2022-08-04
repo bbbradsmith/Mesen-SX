@@ -235,6 +235,7 @@ namespace Mesen.GUI.Debugger
 			ctrlImagePanel.GridSizeX = chkShowTileGrid.Checked ? (IsLargeTileWidth ? 16 : 8): 0;
 			ctrlImagePanel.GridSizeY = chkShowTileGrid.Checked ? (IsLargeTileHeight ? 16 : 8): 0;
 
+			ctrlImagePanel.Overlines.Clear(); // Mode7 viewer
 			if(chkShowScrollOverlay.Checked) {
 				if(isGameboy) {
 					GbPpuState ppu = _state.Gameboy.Ppu;
@@ -244,7 +245,21 @@ namespace Mesen.GUI.Debugger
 					int hScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.HScroll : layer.HScroll;
 					int vScroll = _state.Ppu.BgMode == 7 ? (int)_state.Ppu.Mode7.VScroll : layer.VScroll;
 					int height = _state.Ppu.OverscanMode ? 239 : 224;
-					ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, IsDoubleWidthScreen ? 512 : 256, IsDoubleHeightScreen ? height * 2 : height);
+					//ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, IsDoubleWidthScreen ? 512 : 256, IsDoubleHeightScreen ? height * 2 : height);
+					if (_state.Ppu.BgMode != 7) {
+						ctrlImagePanel.Overlay = new Rectangle(hScroll, vScroll, IsDoubleWidthScreen ? 512 : 256, IsDoubleHeightScreen ? height * 2 : height);
+					} else { // Mode7 viewer
+						ctrlImagePanel.Overlay = Rectangle.Empty;
+						for (int i=0; i<240; ++i) {
+							if (_state.Ppu.Mode7Scanline[i] != 0) {
+								ctrlImagePanel.Overlines.Add(new Rectangle(
+										_state.Ppu.Mode7ScanlineX0[i],
+										_state.Ppu.Mode7ScanlineY0[i],
+										_state.Ppu.Mode7ScanlineX1[i] - _state.Ppu.Mode7ScanlineX0[i],
+										_state.Ppu.Mode7ScanlineY1[i] - _state.Ppu.Mode7ScanlineY0[i]));
+							}
+						}
+					}
 				}
 			} else {
 				ctrlImagePanel.Overlay = Rectangle.Empty;

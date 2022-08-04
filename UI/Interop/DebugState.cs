@@ -144,6 +144,13 @@ namespace Mesen.GUI
 		[MarshalAs(UnmanagedType.I1)] public bool ColorMathSubstractMode;
 		[MarshalAs(UnmanagedType.I1)] public bool ColorMathHalveResult;
 		public UInt16 FixedColor;
+
+		// Mode7 viewer
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 240)] public Int32[] Mode7Scanline;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 240)] public Int32[] Mode7ScanlineX0;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 240)] public Int32[] Mode7ScanlineY0;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 240)] public Int32[] Mode7ScanlineX1;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 240)] public Int32[] Mode7ScanlineY1;
 	}
 
 	public struct LayerConfig

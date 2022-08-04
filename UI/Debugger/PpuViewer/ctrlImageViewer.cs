@@ -13,6 +13,7 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		private Image _image = null;
 		private Rectangle _selection = Rectangle.Empty;
 		private Rectangle _overlay = Rectangle.Empty;
+		private List<Rectangle> _overlines = new List<Rectangle>(); // Mode7 viewer
 		private int _selectionWrapPosition = 0;
 		private int _gridSizeX = 0;
 		private int _gridSizeY = 0;
@@ -39,6 +40,12 @@ namespace Mesen.GUI.Debugger.PpuViewer
 		{
 			get { return _overlay; }
 			set { _overlay = value; this.Invalidate(); }
+		}
+
+		public List<Rectangle> Overlines // Mode7 viewer
+		{
+			get { return _overlines; }
+			set { _overlines = value; this.Invalidate(); }
 		}
 
 		public int GridSizeX
@@ -121,6 +128,19 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				if(_selectionWrapPosition > 0 && _selection.Top + _selection.Height > _selectionWrapPosition) {
 					e.Graphics.DrawRectangle(Pens.White, _selection.Left * scale, _selection.Top * scale - _selectionWrapPosition * scale, _selection.Width * scale + 0.5f, _selection.Height * scale + 0.5f);
 					e.Graphics.DrawRectangle(Pens.Gray, _selection.Left * scale - 1, _selection.Top * scale - 1 - _selectionWrapPosition * scale, _selection.Width * scale + 2.5f, _selection.Height * scale + 2.5f);
+				}
+			}
+
+			if(_overlines.Count > 0) { // Mode7 viewer
+				using(Pen pen = new Pen(Color.FromArgb(255, 255,  0, 255))) { 
+					int scale = this.ImageScale;
+					foreach (Rectangle r in _overlines) {
+						int x0 = (r.X           )* scale;
+						int x1 = (r.X + r.Width ) * scale;
+						int y0 = (r.Y           ) * scale;
+						int y1 = (r.Y + r.Height) * scale;
+						e.Graphics.DrawLine(pen,x0,y0,x1,y1);
+					}
 				}
 			}
 		}
